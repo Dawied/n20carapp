@@ -441,9 +441,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       const SizedBox(height: 20),
                       Card(
                         elevation: 0,
-                        color: theme.colorScheme.surfaceContainerHighest.withValues(
-                          alpha: 0.4,
-                        ),
+                        color: theme.colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.4),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -453,7 +452,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Speed',
@@ -488,7 +488,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               const SizedBox(height: 8),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Steering Strength',
@@ -546,7 +547,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     child: Text(
                                       _btManager.errorMessage!,
                                       style: TextStyle(
-                                        color: theme.colorScheme.onErrorContainer,
+                                        color:
+                                            theme.colorScheme.onErrorContainer,
                                       ),
                                     ),
                                   ),
