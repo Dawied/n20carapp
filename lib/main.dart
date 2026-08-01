@@ -478,7 +478,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SpeedTouchControl(
+                    SpeedSlider(
                       currentSpeed: _speed,
                       minSpeed: 10,
                       maxSpeed: 255,
@@ -490,7 +490,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                     ),
                     const SizedBox(width: 32),
-                    SteeringTouchControl(
+                    SteeringStrengthSlider(
                       currentSteering: _steeringStrength,
                       minSteering: 0.1,
                       maxSteering: 1.0,

@@ -192,14 +192,14 @@ class _DSliderState<T extends num> extends State<DSlider<T>> {
 }
 
 /// Convenience component for Speed control
-class SpeedTouchControl extends StatelessWidget {
+class SpeedSlider extends StatelessWidget {
   final int currentSpeed;
   final int minSpeed;
   final int maxSpeed;
   final int step;
   final ValueChanged<int> onSpeedChanged;
 
-  const SpeedTouchControl({
+  const SpeedSlider({
     super.key,
     required this.currentSpeed,
     this.minSpeed = 10,
@@ -223,14 +223,14 @@ class SpeedTouchControl extends StatelessWidget {
 }
 
 /// Convenience component for Steering Strength control
-class SteeringTouchControl extends StatelessWidget {
+class SteeringStrengthSlider extends StatelessWidget {
   final double currentSteering;
   final double minSteering;
   final double maxSteering;
   final double step;
   final ValueChanged<double> onSteeringChanged;
 
-  const SteeringTouchControl({
+  const SteeringStrengthSlider({
     super.key,
     required this.currentSteering,
     this.minSteering = 0.1,
