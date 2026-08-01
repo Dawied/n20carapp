@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// An oval capsule slider control styled like [VirtualJoystick].
 /// Supports both integer and double values with configurable steps and labels.
-class OvalTouchControl<T extends num> extends StatefulWidget {
+class DSlider<T extends num> extends StatefulWidget {
   final T currentValue;
   final T minValue;
   final T maxValue;
@@ -11,7 +11,7 @@ class OvalTouchControl<T extends num> extends StatefulWidget {
   final String Function(T value) formatValue;
   final ValueChanged<T> onChanged;
 
-  const OvalTouchControl({
+  const DSlider({
     super.key,
     required this.currentValue,
     required this.minValue,
@@ -23,10 +23,10 @@ class OvalTouchControl<T extends num> extends StatefulWidget {
   });
 
   @override
-  State<OvalTouchControl<T>> createState() => _OvalTouchControlState<T>();
+  State<DSlider<T>> createState() => _DSliderState<T>();
 }
 
-class _OvalTouchControlState<T extends num> extends State<OvalTouchControl<T>> {
+class _DSliderState<T extends num> extends State<DSlider<T>> {
   static const double _trackWidth = 64.0;
   static const double _trackHeight = 160.0;
   static const double _knobSize = 44.0;
@@ -210,7 +210,7 @@ class SpeedTouchControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OvalTouchControl<int>(
+    return DSlider<int>(
       currentValue: currentSpeed,
       minValue: minSpeed,
       maxValue: maxSpeed,
@@ -241,7 +241,7 @@ class SteeringTouchControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OvalTouchControl<double>(
+    return DSlider<double>(
       currentValue: currentSteering,
       minValue: minSteering,
       maxValue: maxSteering,

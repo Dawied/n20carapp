@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'bluetooth_manager.dart';
 import 'widgets/virtual_joystick.dart';
-import 'widgets/speed_touch_control.dart';
+import 'widgets/d_slider.dart';
 
 final ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier<ThemeMode>(
   ThemeMode.dark,
