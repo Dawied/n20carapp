@@ -438,96 +438,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      Card(
-                        elevation: 0,
-                        color: theme.colorScheme.surfaceContainerHighest
-                            .withValues(alpha: 0.4),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Speed',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: theme.colorScheme.onSurface,
-                                    ),
-                                  ),
-                                  Text(
-                                    '$_speed',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: accentColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Slider(
-                                value: _speed.toDouble(),
-                                min: 10,
-                                max: 255,
-                                divisions: 49,
-                                activeColor: accentColor,
-                                label: '$_speed',
-                                onChanged: (val) {
-                                  setState(() {
-                                    _speed = val.round();
-                                  });
-                                },
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Steering Strength',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: theme.colorScheme.onSurface,
-                                    ),
-                                  ),
-                                  Text(
-                                    _steeringStrength.toStringAsFixed(1),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: accentColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Slider(
-                                value: _steeringStrength,
-                                min: 0.1,
-                                max: 1.0,
-                                divisions: 9,
-                                activeColor: accentColor,
-                                label: _steeringStrength.toStringAsFixed(1),
-                                onChanged: (val) {
-                                  setState(() {
-                                    _steeringStrength = double.parse(
-                                      val.toStringAsFixed(1),
-                                    );
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                       if (_btManager.errorMessage != null) ...[
                         const SizedBox(height: 16),
                         Padding(
@@ -563,18 +473,35 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Positioned(
-                left: 75,
-                bottom: 75,
-                child: SpeedTouchControl(
-                  currentSpeed: _speed,
-                  minSpeed: 10,
-                  maxSpeed: 255,
-                  step: 5,
-                  onSpeedChanged: (newSpeed) {
-                    setState(() {
-                      _speed = newSpeed;
-                    });
-                  },
+                left: 40,
+                bottom: 40,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SpeedTouchControl(
+                      currentSpeed: _speed,
+                      minSpeed: 10,
+                      maxSpeed: 255,
+                      step: 5,
+                      onSpeedChanged: (newSpeed) {
+                        setState(() {
+                          _speed = newSpeed;
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 32),
+                    SteeringTouchControl(
+                      currentSteering: _steeringStrength,
+                      minSteering: 0.1,
+                      maxSteering: 1.0,
+                      step: 0.1,
+                      onSteeringChanged: (newSteering) {
+                        setState(() {
+                          _steeringStrength = newSteering;
+                        });
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],
