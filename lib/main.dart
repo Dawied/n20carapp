@@ -206,7 +206,9 @@ class _MyHomePageState extends State<MyHomePage> {
   double _joystickY = 0.0;
   int _speed = 50;
   double _steeringStrength = 0.2;
+  bool _swapSliders = false;
   Timer? _heartbeatTimer;
+
   String _currentDirection = '';
 
   void _startHeartbeatTimer() {
@@ -280,6 +282,36 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context, _) {
         final isConnected = _btManager.connectedDevice != null;
         final isConnecting = _btManager.isConnecting || _btManager.isScanning;
+
+        final speedWidget = SpeedSlider(
+          currentSpeed: _speed,
+          minSpeed: 10,
+          maxSpeed: 255,
+          step: 5,
+          onSpeedChanged: (newSpeed) {
+            setState(() {
+              _speed = newSpeed;
+            });
+            if (_joystickX != 0.0 || _joystickY != 0.0) {
+              _sendCurrentJoystickCommand();
+            }
+          },
+        );
+
+        final steeringWidget = SteeringStrengthSlider(
+          currentSteering: _steeringStrength,
+          minSteering: 0.1,
+          maxSteering: 1.0,
+          step: 0.1,
+          onSteeringChanged: (newSteering) {
+            setState(() {
+              _steeringStrength = newSteering;
+            });
+            if (_joystickX != 0.0 || _joystickY != 0.0) {
+              _sendCurrentJoystickCommand();
+            }
+          },
+        );
 
         return Scaffold(
           appBar: AppBar(
@@ -405,8 +437,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
 
-
-
               const SizedBox(width: 8),
             ],
             centerTitle: true,
@@ -503,43 +533,58 @@ class _MyHomePageState extends State<MyHomePage> {
               Positioned(
                 left: 40,
                 bottom: 40,
-                child: SpeedSlider(
-                  currentSpeed: _speed,
-                  minSpeed: 10,
-                  maxSpeed: 255,
-                  step: 5,
-                  onSpeedChanged: (newSpeed) {
-                    setState(() {
-                      _speed = newSpeed;
-                    });
-                    if (_joystickX != 0.0 || _joystickY != 0.0) {
-                      _sendCurrentJoystickCommand();
-                    }
-                  },
-                ),
+                child: _swapSliders ? steeringWidget : speedWidget,
               ),
               Positioned(
                 right: 40,
                 bottom: 40,
-                child: SteeringStrengthSlider(
-                  currentSteering: _steeringStrength,
-                  minSteering: 0.1,
-                  maxSteering: 1.0,
-                  step: 0.1,
-                  onSteeringChanged: (newSteering) {
-                    setState(() {
-                      _steeringStrength = newSteering;
-                    });
-                    if (_joystickX != 0.0 || _joystickY != 0.0) {
-                      _sendCurrentJoystickCommand();
-                    }
-                  },
-
+                child: _swapSliders ? speedWidget : steeringWidget,
+              ),
+              Positioned(
+                bottom: 120,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: FilledButton.tonalIcon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: isDark
+                          ? theme.colorScheme.surfaceContainerHighest
+                          : const Color(0xFFE2E8F0),
+                      foregroundColor: accentColor,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(
+                          color: accentColor.withValues(alpha: isDark ? 0.3 : 0.45),
+                          width: 1.5,
+                        ),
+                      ),
+                    ),
+                    icon: const Icon(Icons.swap_horiz, size: 20),
+                    label: const Text(
+                      'Swap',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _swapSliders = !_swapSliders;
+                      });
+                    },
+                  ),
                 ),
               ),
+
+
             ],
           ),
         );
+
       },
     );
   }

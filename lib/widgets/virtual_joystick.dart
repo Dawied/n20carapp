@@ -20,6 +20,20 @@ class VirtualJoystickState extends State<VirtualJoystick> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final accentColor =
+        isDark ? const Color(0xFF00E5FF) : const Color(0xFF00838F);
+    final trackBgColor =
+        isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0);
+    final knobGradient = isDark
+        ? const [Color(0xFF00E5FF), Color(0xFF00B0FF)]
+        : const [Color(0xFF00ACC1), Color(0xFF00838F)];
+    final knobIconColor = isDark ? Colors.black54 : Colors.white;
+    final ringShadowColor = isDark
+        ? accentColor.withValues(alpha: 0.15)
+        : Colors.black.withValues(alpha: 0.08);
+
     return GestureDetector(
       onPanUpdate: (details) {
         final renderBox = context.findRenderObject() as RenderBox;
@@ -61,15 +75,15 @@ class VirtualJoystickState extends State<VirtualJoystick> {
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  color: trackBgColor,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFF00E5FF).withValues(alpha: 0.3),
+                    color: accentColor.withValues(alpha: isDark ? 0.3 : 0.45),
                     width: 2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
+                      color: ringShadowColor,
                       blurRadius: 10,
                       spreadRadius: 2,
                     ),
@@ -82,8 +96,8 @@ class VirtualJoystickState extends State<VirtualJoystick> {
               child: Container(
                 width: 10,
                 height: 10,
-                decoration: const BoxDecoration(
-                  color: Colors.white24,
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white24 : Colors.black26,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -96,8 +110,8 @@ class VirtualJoystickState extends State<VirtualJoystick> {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                  gradient: LinearGradient(
+                    colors: knobGradient,
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -105,21 +119,22 @@ class VirtualJoystickState extends State<VirtualJoystick> {
                   boxShadow: [
                     // Floating Z-elevation shadow
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.5),
+                      color: Colors.black.withValues(alpha: isDark ? 0.5 : 0.2),
                       blurRadius: 12,
                       offset: const Offset(0, 6),
                       spreadRadius: 1,
                     ),
-                    BoxShadow(
-                      color: const Color(0xFF00E5FF).withValues(alpha: 0.3),
-                      blurRadius: 6,
-                      spreadRadius: 1,
-                    ),
+                    if (isDark)
+                      BoxShadow(
+                        color: const Color(0xFF00E5FF).withValues(alpha: 0.3),
+                        blurRadius: 6,
+                        spreadRadius: 1,
+                      ),
                   ],
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.drag_indicator,
-                  color: Colors.black54,
+                  color: knobIconColor,
                   size: 20,
                 ),
               ),
@@ -128,5 +143,6 @@ class VirtualJoystickState extends State<VirtualJoystick> {
         ),
       ),
     );
+
   }
 }

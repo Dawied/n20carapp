@@ -70,6 +70,15 @@ class _DSliderState<T extends num> extends State<DSlider<T>> {
     final isDark = theme.brightness == Brightness.dark;
     final accentColor =
         isDark ? const Color(0xFF00E5FF) : const Color(0xFF00838F);
+    final trackBgColor =
+        isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0);
+    final knobGradient = isDark
+        ? const [Color(0xFF00E5FF), Color(0xFF00B0FF)]
+        : const [Color(0xFF00ACC1), Color(0xFF00838F)];
+    final knobIconColor = isDark ? Colors.black54 : Colors.white;
+    final shadowColor = isDark
+        ? accentColor.withValues(alpha: 0.15)
+        : Colors.black.withValues(alpha: 0.08);
 
     final double minD = widget.minValue.toDouble();
     final double maxD = widget.maxValue.toDouble();
@@ -109,15 +118,15 @@ class _DSliderState<T extends num> extends State<DSlider<T>> {
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E293B),
+                      color: trackBgColor,
                       borderRadius: BorderRadius.circular(_trackWidth / 2.0),
                       border: Border.all(
-                        color: accentColor.withValues(alpha: 0.35),
+                        color: accentColor.withValues(alpha: isDark ? 0.35 : 0.45),
                         width: 2,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: accentColor.withValues(alpha: 0.15),
+                          color: shadowColor,
                           blurRadius: 10,
                           spreadRadius: 2,
                         ),
@@ -145,28 +154,29 @@ class _DSliderState<T extends num> extends State<DSlider<T>> {
                     width: _knobSize,
                     height: _knobSize,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                      gradient: LinearGradient(
+                        colors: knobGradient,
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.4),
+                          color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.2),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
-                        BoxShadow(
-                          color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
-                          blurRadius: 10,
-                          spreadRadius: 1,
-                        ),
+                        if (isDark)
+                          BoxShadow(
+                            color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                            blurRadius: 10,
+                            spreadRadius: 1,
+                          ),
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.drag_indicator,
-                      color: Colors.black54,
+                      color: knobIconColor,
                       size: 20,
                     ),
                   ),
@@ -175,6 +185,7 @@ class _DSliderState<T extends num> extends State<DSlider<T>> {
             ),
           ),
         ),
+
         const SizedBox(height: 6),
         // Text label outside under the control
         Text(
