@@ -224,25 +224,30 @@ class _MyHomePageState extends State<MyHomePage> {
     _heartbeatTimer = null;
   }
 
-  void _handleJoystickInput(double x, double y) {
-    final int intX = x.round();
-    final int intY = y.round();
-
-    setState(() {
-      _joystickX = x;
-      _joystickY = y;
-    });
-
+  void _sendCurrentJoystickCommand() {
+    final int intX = _joystickX.round();
+    final int intY = _joystickY.round();
     final String command =
         'joystick,$intX,$intY,$_speed,${_steeringStrength.toStringAsFixed(1)}\n';
     if (command != _currentDirection) {
       _currentDirection = command;
       _btManager.sendCommand(command);
     }
+  }
+
+  void _handleJoystickInput(double x, double y) {
+    setState(() {
+      _joystickX = x;
+      _joystickY = y;
+    });
+
+    _sendCurrentJoystickCommand();
+
     if (_heartbeatTimer == null || !_heartbeatTimer!.isActive) {
       _startHeartbeatTimer();
     }
   }
+
 
   void _handleJoystickStop() {
     _stopHeartbeatTimer();
@@ -507,6 +512,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     setState(() {
                       _speed = newSpeed;
                     });
+                    if (_joystickX != 0.0 || _joystickY != 0.0) {
+                      _sendCurrentJoystickCommand();
+                    }
                   },
                 ),
               ),
@@ -522,7 +530,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     setState(() {
                       _steeringStrength = newSteering;
                     });
+                    if (_joystickX != 0.0 || _joystickY != 0.0) {
+                      _sendCurrentJoystickCommand();
+                    }
                   },
+
                 ),
               ),
             ],
