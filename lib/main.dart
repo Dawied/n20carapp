@@ -475,33 +475,31 @@ class _MyHomePageState extends State<MyHomePage> {
               Positioned(
                 left: 40,
                 bottom: 40,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SpeedSlider(
-                      currentSpeed: _speed,
-                      minSpeed: 10,
-                      maxSpeed: 255,
-                      step: 5,
-                      onSpeedChanged: (newSpeed) {
-                        setState(() {
-                          _speed = newSpeed;
-                        });
-                      },
-                    ),
-                    const SizedBox(width: 32),
-                    SteeringStrengthSlider(
-                      currentSteering: _steeringStrength,
-                      minSteering: 0.1,
-                      maxSteering: 1.0,
-                      step: 0.1,
-                      onSteeringChanged: (newSteering) {
-                        setState(() {
-                          _steeringStrength = newSteering;
-                        });
-                      },
-                    ),
-                  ],
+                child: SpeedSlider(
+                  currentSpeed: _speed,
+                  minSpeed: 10,
+                  maxSpeed: 255,
+                  step: 5,
+                  onSpeedChanged: (newSpeed) {
+                    setState(() {
+                      _speed = newSpeed;
+                    });
+                  },
+                ),
+              ),
+              Positioned(
+                right: 40,
+                bottom: 40,
+                child: SteeringStrengthSlider(
+                  currentSteering: _steeringStrength,
+                  minSteering: 0.1,
+                  maxSteering: 1.0,
+                  step: 0.1,
+                  onSteeringChanged: (newSteering) {
+                    setState(() {
+                      _steeringStrength = newSteering;
+                    });
+                  },
                 ),
               ),
             ],
