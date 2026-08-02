@@ -1,12 +1,12 @@
 {
-    "name": "n20carapp",
-    "short_name": "n20carapp",
+    "name": "N20 Car Controller",
+    "short_name": "N20 Car Controller",
     "start_url": ".",
-    "display": "standalone",
+    "display": "fullscreen",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "description": "N20 Car Controller",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {
