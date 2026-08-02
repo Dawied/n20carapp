@@ -2,9 +2,13 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import 'bluetooth_manager.dart';
 import 'widgets/virtual_joystick.dart';
 import 'widgets/d_slider.dart';
+import 'utils/file_downloader.dart';
+
+
 
 final ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier<ThemeMode>(
   ThemeMode.dark,
@@ -379,6 +383,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
               ),
+              IconButton(
+                tooltip: 'Download Arduino code',
+                icon: Icon(Icons.file_download_outlined, color: accentColor),
+                onPressed: () async {
+                  final message = await saveArduinoCodeToDownloads();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(message),
+                        behavior: SnackBarBehavior.floating,
+                        duration: const Duration(seconds: 4),
+                      ),
+                    );
+                  }
+                },
+              ),
+
+
+
               const SizedBox(width: 8),
             ],
             centerTitle: true,
