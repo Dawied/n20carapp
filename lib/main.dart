@@ -3,21 +3,30 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'bluetooth_manager.dart';
 import 'widgets/virtual_joystick.dart';
 import 'widgets/d_slider.dart';
 import 'utils/file_downloader.dart';
 
-
-
 final ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier<ThemeMode>(
   ThemeMode.dark,
 );
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
+
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final isDarkMode = prefs.getBool('is_dark_mode') ?? true;
+    themeModeNotifier.value = isDarkMode ? ThemeMode.dark : ThemeMode.light;
+  } catch (_) {}
+
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -211,6 +220,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String _currentDirection = '';
 
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (mounted) {
+        setState(() {
+          _swapSliders = prefs.getBool('swap_sliders') ?? false;
+        });
+      }
+    } catch (_) {}
+  }
+
+
   void _startHeartbeatTimer() {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
@@ -249,7 +276,6 @@ class _MyHomePageState extends State<MyHomePage> {
       _startHeartbeatTimer();
     }
   }
-
 
   void _handleJoystickStop() {
     _stopHeartbeatTimer();
@@ -412,11 +438,20 @@ class _MyHomePageState extends State<MyHomePage> {
                           ? const Color(0xFFFFD54F)
                           : const Color(0xFF5C6BC0),
                     ),
-                    onPressed: () {
-                      themeModeNotifier.value = isDarkMode
+                    onPressed: () async {
+                      final newMode = isDarkMode
                           ? ThemeMode.light
                           : ThemeMode.dark;
+                      themeModeNotifier.value = newMode;
+                      try {
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool(
+                          'is_dark_mode',
+                          newMode == ThemeMode.dark,
+                        );
+                      } catch (_) {}
                     },
+
                   );
                 },
               ),
@@ -449,53 +484,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        isConnected
-                            ? Icons.directions_car
-                            : Icons.directions_car_outlined,
-                        size: 70,
-                        color: isConnected || isConnecting
-                            ? accentColor
-                            : theme.colorScheme.outline,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        isConnected
-                            ? 'N20 Car Ready'
-                            : (isConnecting
-                                  ? 'Connecting to N20 Car...'
-                                  : 'Connect to N20 Car'),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
                       const SizedBox(height: 24),
                       VirtualJoystick(
                         onJoystickChanged: _handleJoystickInput,
                         onJoystickStop: _handleJoystickStop,
                       ),
                       const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHighest
-                              .withValues(alpha: 0.5),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'X: ${_joystickX.toStringAsFixed(1)} | Y: ${_joystickY.toStringAsFixed(1)}',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontFamily: 'monospace',
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
                       if (_btManager.errorMessage != null) ...[
                         const SizedBox(height: 16),
                         Padding(
@@ -541,7 +535,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: _swapSliders ? speedWidget : steeringWidget,
               ),
               Positioned(
-                bottom: 120,
+                bottom: 40,
                 left: 0,
                 right: 0,
                 child: Center(
@@ -558,7 +552,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                         side: BorderSide(
-                          color: accentColor.withValues(alpha: isDark ? 0.3 : 0.45),
+                          color: accentColor.withValues(
+                            alpha: isDark ? 0.3 : 0.45,
+                          ),
                           width: 1.5,
                         ),
                       ),
@@ -571,20 +567,23 @@ class _MyHomePageState extends State<MyHomePage> {
                         fontSize: 13,
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
+                      final newSwap = !_swapSliders;
                       setState(() {
-                        _swapSliders = !_swapSliders;
+                        _swapSliders = newSwap;
                       });
+                      try {
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool('swap_sliders', newSwap);
+                      } catch (_) {}
                     },
+
                   ),
                 ),
               ),
-
-
             ],
           ),
         );
-
       },
     );
   }
