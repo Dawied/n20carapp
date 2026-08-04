@@ -9,10 +9,14 @@ import 'bluetooth_manager.dart';
 import 'widgets/virtual_joystick.dart';
 import 'widgets/d_slider.dart';
 import 'utils/file_downloader.dart';
+import 'utils/custom_snackbar.dart';
+import 'recording.dart';
+
 
 final ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier<ThemeMode>(
   ThemeMode.dark,
 );
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -211,11 +215,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final BluetoothManager _btManager = BluetoothManager();
+  final JoystickRecorder _recorder = JoystickRecorder();
   double _joystickX = 0.0;
   double _joystickY = 0.0;
   int _speed = 50;
   double _steeringStrength = 0.2;
   bool _swapSliders = false;
+  bool _showRecordingControls = true;
   Timer? _heartbeatTimer;
 
   String _currentDirection = '';
@@ -232,6 +238,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if (mounted) {
         setState(() {
           _swapSliders = prefs.getBool('swap_sliders') ?? false;
+          _showRecordingControls =
+              prefs.getBool('show_recording_controls') ?? true;
         });
       }
     } catch (_) {}
@@ -244,6 +252,14 @@ class _MyHomePageState extends State<MyHomePage> {
       if (_currentDirection.isNotEmpty &&
           !_currentDirection.startsWith('joystick,0,0')) {
         _btManager.sendCommand(_currentDirection);
+        if (_recorder.isRecording) {
+          _recorder.recordCommand(
+            _joystickX.round(),
+            _joystickY.round(),
+            _speed,
+            _steeringStrength,
+          );
+        }
       }
     });
   }
@@ -261,6 +277,14 @@ class _MyHomePageState extends State<MyHomePage> {
     if (command != _currentDirection) {
       _currentDirection = command;
       _btManager.sendCommand(command);
+      if (_recorder.isRecording) {
+        _recorder.recordCommand(
+          intX,
+          intY,
+          _speed,
+          _steeringStrength,
+        );
+      }
     }
   }
 
@@ -287,13 +311,19 @@ class _MyHomePageState extends State<MyHomePage> {
         'joystick,0,0,$_speed,${_steeringStrength.toStringAsFixed(1)}\n';
     _currentDirection = command;
     _btManager.sendCommand(command);
+    if (_recorder.isRecording) {
+      _recorder.recordCommand(0, 0, _speed, _steeringStrength);
+    }
   }
+
 
   @override
   void dispose() {
     _stopHeartbeatTimer();
+    _recorder.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -461,14 +491,34 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () async {
                   final message = await saveArduinoCodeToDownloads();
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(message),
-                        behavior: SnackBarBehavior.floating,
-                        duration: const Duration(seconds: 4),
-                      ),
-                    );
+                    showAppSnackBar(context, message);
                   }
+
+                },
+              ),
+              IconButton(
+                tooltip: _showRecordingControls
+                    ? 'Hide Recording Controls'
+                    : 'Show Recording Controls',
+                icon: Icon(
+                  _showRecordingControls
+                      ? Icons.videocam
+                      : Icons.videocam_off_outlined,
+                  color: _showRecordingControls
+                      ? accentColor
+                      : theme.colorScheme.outline,
+                ),
+                onPressed: () async {
+                  setState(() {
+                    _showRecordingControls = !_showRecordingControls;
+                  });
+                  try {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool(
+                      'show_recording_controls',
+                      _showRecordingControls,
+                    );
+                  } catch (_) {}
                 },
               ),
 
@@ -489,7 +539,40 @@ class _MyHomePageState extends State<MyHomePage> {
                         onJoystickChanged: _handleJoystickInput,
                         onJoystickStop: _handleJoystickStop,
                       ),
+                      if (_showRecordingControls) ...[
+                        const SizedBox(height: 16),
+                        RecordingControlsWidget(
+                          recorder: _recorder,
+                          onStartRecording: () {
+                            _recorder.startRecording();
+                          },
+                          onStopRecording: () {
+                            _recorder.stopRecording();
+                          },
+                          onStartPlayback: () {
+                            _stopHeartbeatTimer();
+                            _recorder.playback(
+                              onSendCommand: (command) async {
+                                _currentDirection = command;
+                                await _btManager.sendCommand(command);
+                              },
+                              onUpdatePosition: (x, y) {
+                                setState(() {
+                                  _joystickX = x;
+                                  _joystickY = y;
+                                });
+                              },
+                            );
+                          },
+                          onStopPlayback: () {
+                            _recorder.stopPlayback();
+                            _handleJoystickStop();
+                          },
+                        ),
+                      ],
                       const SizedBox(height: 16),
+
+
                       if (_btManager.errorMessage != null) ...[
                         const SizedBox(height: 16),
                         Padding(
