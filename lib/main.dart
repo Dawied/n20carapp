@@ -572,7 +572,45 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ],
                       const SizedBox(height: 16),
-
+                      FilledButton.tonalIcon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: isDark
+                              ? theme.colorScheme.surfaceContainerHighest
+                              : const Color(0xFFE2E8F0),
+                          foregroundColor: accentColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(
+                              color: accentColor.withValues(
+                                alpha: isDark ? 0.3 : 0.45,
+                              ),
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        icon: const Icon(Icons.swap_horiz, size: 20),
+                        label: const Text(
+                          'Swap',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                        onPressed: () async {
+                          final newSwap = !_swapSliders;
+                          setState(() {
+                            _swapSliders = newSwap;
+                          });
+                          try {
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.setBool('swap_sliders', newSwap);
+                          } catch (_) {}
+                        },
+                      ),
 
                       if (_btManager.errorMessage != null) ...[
                         const SizedBox(height: 16),
@@ -618,53 +656,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 bottom: 40,
                 child: _swapSliders ? speedWidget : steeringWidget,
               ),
-              Positioned(
-                bottom: 40,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: FilledButton.tonalIcon(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: isDark
-                          ? theme.colorScheme.surfaceContainerHighest
-                          : const Color(0xFFE2E8F0),
-                      foregroundColor: accentColor,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(
-                          color: accentColor.withValues(
-                            alpha: isDark ? 0.3 : 0.45,
-                          ),
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                    icon: const Icon(Icons.swap_horiz, size: 20),
-                    label: const Text(
-                      'Swap',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                      ),
-                    ),
-                    onPressed: () async {
-                      final newSwap = !_swapSliders;
-                      setState(() {
-                        _swapSliders = newSwap;
-                      });
-                      try {
-                        final prefs = await SharedPreferences.getInstance();
-                        await prefs.setBool('swap_sliders', newSwap);
-                      } catch (_) {}
-                    },
 
-                  ),
-                ),
-              ),
             ],
           ),
         );
