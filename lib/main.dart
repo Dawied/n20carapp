@@ -5,12 +5,13 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'bluetooth_manager.dart';
+import 'utils/bluetooth_manager.dart';
 import 'widgets/virtual_joystick.dart';
 import 'widgets/d_slider.dart';
+import 'widgets/custom_snackbar.dart';
+import 'widgets/recording.dart';
 import 'utils/file_downloader.dart';
-import 'utils/custom_snackbar.dart';
-import 'recording.dart';
+
 
 
 final ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier<ThemeMode>(

@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'utils/custom_snackbar.dart';
-
+import 'custom_snackbar.dart';
 
 /// Represents a single timestamped command in the recorded stream.
 class RecordedCommand {
@@ -354,7 +353,6 @@ class RecordingControlsWidget extends StatelessWidget {
                     Navigator.pop(context);
                     showAppSnackBar(context, 'Saved "$name"');
                   }
-
                 }
               },
               child: const Text('Save'),
@@ -431,8 +429,6 @@ class RecordingControlsWidget extends StatelessWidget {
                                 context,
                                 'Loaded "${rec.name}". Press Play to start.',
                               );
-
-
                             },
                           );
                         },
